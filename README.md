@@ -1,0 +1,2 @@
+# cityhash
+Google's CityHash.
