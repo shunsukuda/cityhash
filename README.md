@@ -18,6 +18,9 @@ c.SetSize32()  // Sum() = Sum32()
 c.SetSize64()  // Sum() = Sum64()
 c.SetSize128() // Sum() = Sum128()
 
+c.Set([]byte("..."))    // set new []byte
+c.Write([]byte("..."))  // append []byte
+
 c.Sum32()                      // uint32
 c.Sum64()                      // uint64
 c.Sum64WithSeed(seed)          // uint64(with seed)
