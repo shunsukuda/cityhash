@@ -4,6 +4,8 @@ import (
 	"encoding/binary"
 	"fmt"
 	"strconv"
+
+	"github.com/shunsukuda/forceconv"
 )
 
 type City struct {
@@ -51,26 +53,19 @@ func NewCity(s []byte, opts ...Option) *City {
 }
 
 func (c *City) sumToHash32(x uint32) {
-	c.hash = c.hash[0:0]
-	t := make([]byte, 4)
-	binary.BigEndian.PutUint32(t, x)
-	c.hash = append(c.hash, t...)
+	c.hash = c.hash[:4]
+	binary.BigEndian.PutUint32(c.hash[:4], x)
 }
 
 func (c *City) sumToHash64(x uint64) {
-	c.hash = c.hash[0:0]
-	t := make([]byte, 8)
-	binary.BigEndian.PutUint64(t, x)
-	c.hash = append(c.hash, t...)
+	c.hash = c.hash[:8]
+	binary.BigEndian.PutUint64(c.hash[:8], x)
 }
 
 func (c *City) sumToHash128(x Uint128) {
-	c.hash = c.hash[0:0]
-	t := make([]byte, 8)
-	binary.BigEndian.PutUint64(t, x.High64())
-	c.hash = append(c.hash, t...)
-	binary.BigEndian.PutUint64(t, x.Low64())
-	c.hash = append(c.hash, t...)
+	c.hash = c.hash[:16]
+	binary.BigEndian.PutUint64(c.hash[:8], x.High64())
+	binary.BigEndian.PutUint64(c.hash[8:], x.Low64())
 }
 
 func (c *City) Set(s []byte) { c.buf = s }
@@ -121,8 +116,8 @@ func (c *City) BlockSize() int {
 }
 
 func (c *City) Reset() {
-	c.buf = c.buf[0:0]
-	c.hash = c.hash[0:0]
+	c.buf = c.buf[:0]
+	c.hash = c.hash[:0]
 	// c.size = 8
 }
 
@@ -193,6 +188,10 @@ func (c *City) Sum128WithSeed(seed Uint128) Uint128 {
 	v := CityHash128WithSeed(c.buf, uint32(len(c.buf)), seed)
 	c.sumToHash128(v)
 	return v
+}
+
+func (c *City) Bytes() []byte {
+	return forceconv.StringToBytes(c.String())
 }
 
 func (c *City) String() string {

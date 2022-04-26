@@ -539,6 +539,30 @@ func TestCity_SumAppend(t *testing.T) {
 	}
 }
 
+func TestCity_Bytes(t *testing.T) {
+	type test struct {
+		name string
+		c    *City
+		want string
+	}
+
+	setup()
+	tests := []test{
+		{
+			name: "#" + strconv.Itoa(kTestSize),
+			c:    NewCity(data[:kDataSize]),
+			want: testdata_string[kTestSize-1][0],
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := string(tt.c.Bytes()); got != tt.want {
+				t.Errorf("City.Bytes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestCity_String(t *testing.T) {
 	type test struct {
 		name string
